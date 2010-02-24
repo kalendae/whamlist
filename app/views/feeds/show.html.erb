@@ -1,0 +1,18 @@
+<p>
+  <b>Submitter:</b>
+  <%=h @feed.submitter_id %>
+</p>
+
+<p>
+  <b>Feed url:</b>
+  <%=h @feed.feed_url %>
+</p>
+
+<p>
+  <b>Title:</b>
+  <%=h @feed.title %>
+</p>
+
+
+<%= link_to 'Edit', edit_feed_path(@feed) %> |
+<%= link_to 'Back', feeds_path %>

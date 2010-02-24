@@ -1,0 +1,53 @@
+<%# Created by IntelliJ IDEA.
+    User: Tao Ge
+    Date: Jul 12, 2009
+    Time: 3:27:57 PM
+    To change this template use File | Settings | File Templates.
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US" >
+<head>
+  <%= stylesheet_link_tag 'application' %>
+  <%= javascript_include_tag :defaults %>
+  <title><% if @title.blank? %>WhamList - yet another rss reader<% else %><%= @title %><% end %></title>
+  <!--[if IE 6]>
+    <style type="text/css">
+      img, div { behavior: url(/iepngfix/iepngfix.htc) }
+      div#action_panel {
+        background-color: #FFF !important;
+        background-image: url('/images/action_panel_back_ie6.png') !important;
+      }
+    </style>
+  <![endif]-->
+</head>
+<body>
+  <div id="header">
+      <a href="/"><img src="/images/logo.png" alt="" id="logo_img"/></a>
+      <nobr>
+          <% if current_user %>
+            Hello <%= link_to current_user.login.titleize, current_user, :class => "header_link" %> |
+            <%= link_to "Logout", logout_path, :class => "header_link"  %>
+          <% else %>
+            <%= link_to "Login", login_path, :class => "header_link"  %> | <%= link_to "Signup", signup_path, :class => "header_link"  %>
+          <% end %>
+      </nobr>
+  </div>
+  <div id="topdivide">&nbsp;</div>
+  <div id="messages">
+      <% if flash[:notice] -%>
+          <p class="notice"><%= flash[:notice] %></p>
+      <% end -%>
+      <% if flash[:error] -%>
+          <p class="error"><%= flash[:error] %></p>
+      <% end -%>
+  </div>
+  <div id="page">
+    <%= yield %>
+  </div>
+  <div id="bottomdivide">&nbsp;</div>
+  <div id="bottomlinks">
+   <%= link_to "feedback", 'mailto:taoyge@gmail.com', :class => "bottom_link" %>
+  </div>
+
+</body>
+</html>
