@@ -1,5 +1,8 @@
 things to work on:
 
+easier signup - all thats needed is really just email/password instead of the 
+restful authentication defaults.  also would be nice to just start using feeds 
+without login and then deciding to signup later if one wanted to save the feedlist.
 feed discovery - so u don't need to put in exact feed url
 feed tolerance - some feeds are not very well parsed by feedtools (eg. ebert's 
 blog)
