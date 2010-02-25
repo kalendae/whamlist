@@ -4,17 +4,22 @@
 
 <div id="feed_entries">
     <% @entries.each do |entry| %>
-    <div class="entry" id="entry<%= entry.id %>">
-        <div class="entry_header">
-            <span class="entry_feed_title"><%= entry.feed.title %></span> -
-            <span class="entry_title"><%= entry.title %></span>
-            <span class="entry_time">published <%= entry.published.nil? ? "time unknown" : "#{time_ago_in_words(entry.published)} ago" %></span>
-        </div>
-        <iframe id="entry_frame_<%= entry.id %>" class="actual_entry_iframe" src="<%= url_for(entry) %>" onload="resizeFrame(this);"></iframe>
-        <script type="text/javascript">
-            entry_frames.push('entry_frame_<%= entry.id %>');
-        </script>
-    </div>
+      <% read = current_user.entries.include? entry %>
+      <div class="entry<%= read ? " entry_read" : "" %>" id="entry<%= entry.id %>">
+          <div class="entry_toggle"><a href="#" onclick="$('entry_frame_<%= entry.id %>').toggle();return false;">[SHOW/HIDE TOGGLE]</a></div>
+          <div class="entry_header">
+              <span id="entry_status_<%= entry.id %>" class="<%= read ? "read" : "unread" %>">[<%= read ? "Read" : "Unread" %>]</span>
+              <span class="entry_feed_title"><%= entry.feed.title %></span> -
+              <span class="entry_title"><%= link_to entry.title, entry.link %></span>
+              <span class="entry_time">published <%= entry.published.nil? ? "time unknown" : "#{time_ago_in_words(entry.published)} ago" %></span>
+          </div>
+          <iframe style="height:0px;" FRAMEBORDER="0" id="entry_frame_<%= entry.id %>" class="actual_entry_iframe" src="<%= url_for(entry) %>" onload="resizeFrame(this);<%= read ? "this.toggle();" : "" %>"></iframe>
+          <% unless read %>
+            <script type="text/javascript">
+                entry_frames.push([<%= entry.id %>,1]);
+            </script>
+          <% end %>
+      </div>
     <% end %>
 </div>
 

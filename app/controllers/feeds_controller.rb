@@ -1,12 +1,12 @@
 class FeedsController < ApplicationController
   include AuthenticatedSystem
-  before_filter :login_required, :only => [:index]
+  before_filter :login_required, :only => [:index, :create, :destroy]
 
   # GET /feeds
   # GET /feeds.xml
   def index
     @feed = Feed.new
-    @recent_feeds = Feed.recent 20
+    @recent_feeds = Feed.recent 8
 
     respond_to do |format|
       format.html # index.html.erb
@@ -47,11 +47,13 @@ class FeedsController < ApplicationController
         flash[:notice] = e.message
       end
     else
-      flash[:notice] = "Feed was first submitted by #{@feed.submitter} and has now been added to your feed list." 
+      flash[:notice] = "Feed was first submitted by #{@feed.submitter.login} and has now been added to your feed list." 
     end
 
     # add this feed to the current user
-    current_user.feeds << @feed unless @feed.blank? or @feed.submitter.blank?
+    @dupe = current_user.feeds.include?(@feed)
+    flash[:notice] = "Feed is already in your feed list." if @dupe
+    current_user.feeds << @feed unless @feed.blank? or @feed.submitter.blank? or current_user.feeds.include?(@feed)
 
     respond_to do |format|
       format.js                                                                                                                                                                                     
@@ -79,10 +81,11 @@ class FeedsController < ApplicationController
   # DELETE /feeds/1.xml
   def destroy
     @feed = Feed.find(params[:id])
-    @feed.destroy
+    current_user.feeds.delete @feed
+    current_user.save!
 
     respond_to do |format|
-      format.html { redirect_to(feeds_url) }
+      format.html { redirect_to(root_path) }
       format.xml  { head :ok }
     end
   end

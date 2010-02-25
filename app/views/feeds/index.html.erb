@@ -1,6 +1,6 @@
 <style type="text/css">
   div#flash_area {
-    margin: 0;
+    margin: 0 0 3px 0;
     font-size: 12px;      
     color: #F90;      
   }
@@ -66,6 +66,26 @@
     width: 100%;
     border: none;      
   }
+  .entry_header {
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .entry_time {
+    color: #999;        
+    font-size: 11px;
+  }
+  .unread {
+    color: #3a3;        
+  }
+  .read {
+    color: #a33;
+  }
+  .entry_toggle {
+    font-size: 12px;        
+  }
+  .entry_read {
+    filter:alpha(opacity=75);-moz-opacity:.75;opacity:.75;
+  }
 </style>
 
 <div id="feed_control_panel_controls">
@@ -82,7 +102,7 @@
         Enter URL of feed to add to your list:
         <%= f.text_field :feed_url %>
         <%= f.submit "Add", :onclick => "$('input_progress').show();"  %>
-        <img id="input_progress" src="/images/progress_sm.gif" alt="" style="display:none;">
+        <img id="input_progress" src="/images/progress_sm.gif" alt="" style="display:none;"/>
       <% end %>
   </div>
 
@@ -91,27 +111,38 @@
   <div id="my_feeds" class="feedbox">
       <div class="feed_box_header">My Feeds</div>
       <% current_user.feeds.each do |feed| %>
-      <div class="feed" id="feed<%= feed.id %>"><%= feed.title %></div>
+      <div class="feed" id="feed<%= feed.id %>"><%= feed.title %> <%= link_to 'remove', feed_path(feed), :method => :delete, :style => "font-size:11px;" %></div>
       <% end %>
   </div>
   <div id="recent_feeds" class="feedbox">
-      <div class="feed_box_header">Recent Feeds</div>
+      <div class="feed_box_header">Recent Feeds (click add to add to your feed list)</div>
       <% @recent_feeds.each do |feed| %>
-      <div class="feed"><%= feed.title %> <span class="submitter">submitted by <%= feed.submitter.login %></span></div>
+      <div class="feed"><%= link_to_remote 'add', :url => {:action => 'create'}, :before => "$('rp_#{feed.id}').show();", :with => "'feed[feed_url]=#{CGI.escape(feed.feed_url)}'", :style => 'font-size:11px;' %> <img id="rp_<%= feed.id %>" src="/images/progress_sm.gif" style="display:none;" alt=""/><%= feed.title %> <span class="submitter">submitted by <%= feed.submitter.login %></span></div>
       <% end %>
   </div>
   <div style="clear:left;"> </div>
 </div>
 
 
-<div id="info">If you scroll past an entry it is considered read.</div>
+<div id="info">If you scroll past an entry it is considered read. <%= link_to 'mark all as unread', {:controller => :users, :action => :clear_entries} %></div>
 
 <script type="text/javascript">
     var entry_frames = new Array();
     function resizeFrame(frame) {
       frame.style.height = frame.contentWindow.document.body.scrollHeight + "px";
     }
-    
+    Event.observe(window, 'scroll', function() {
+      // go through each entry item if the scroll position + window height is > bottom of entry div mark it read
+      entry_frames.each(function(item){
+        if (item[1] == 1) {
+          var e = $('entry'+item[0]);
+          if ((e.cumulativeScrollOffset()[1] + document.viewport.getHeight()) > (e.getHeight() + e.cumulativeOffset()[1])) {
+            item[1] = 0;
+            new Ajax.Request('/entries/mark_as_read/' + item[0], {asynchronous:true, evalScripts:true})
+          }
+        }
+      });
+    });
 </script>
 
 <div id="read_area">

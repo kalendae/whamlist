@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   # Be sure to include AuthenticationSystem in Application Controller instead
   include AuthenticatedSystem
-  before_filter :login_required, :only => [:show]
+  before_filter :login_required, :only => [:show, :clear_entries]
   
   # users/show is the partial that displays all the articles in the feed
   def show
@@ -31,7 +31,7 @@ class UsersController < ApplicationController
         @entries << nil
       end
     end
-    @entries = @entries.compact.sort_by{|e| e.published.nil? ? Time.at(0) : e.published}.reverse[0..19]
+    @entries = @entries.compact.sort_by{|e| e.published.nil? ? Time.at(0) : e.published}.reverse[0..29]
     respond_to do |format|
       format.js {render :partial => 'show'} 
       format.html {render :partial => 'show'}
@@ -59,6 +59,12 @@ class UsersController < ApplicationController
       flash[:error]  = "We couldn't set up that account, sorry.  Please try again, or contact an admin (link is above)."
       render :action => 'new'
     end
+  end
+
+  def clear_entries
+    current_user.entries = []
+    current_user.save!
+    redirect_to root_path
   end
 
 end

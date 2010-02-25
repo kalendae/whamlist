@@ -1,0 +1,6 @@
+page << "$('entry#{@entry.id}').addClassName('entry_read');"
+page.replace_html "entry_status_#{@entry.id}", "[Read]"
+page << "$('entry_status_#{@entry.id}').removeClassName('unread');"
+page << "$('entry_status_#{@entry.id}').addClassName('read');"
+page.visual_effect :highlight, "entry_status_#{@entry.id}", :duration => 2
+
