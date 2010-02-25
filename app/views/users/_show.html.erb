@@ -1,0 +1,20 @@
+<script type="text/javascript">
+    entry_frames = new Array();
+</script>
+
+<div id="feed_entries">
+    <% @entries.each do |entry| %>
+    <div class="entry" id="entry<%= entry.id %>">
+        <div class="entry_header">
+            <span class="entry_feed_title"><%= entry.feed.title %></span> -
+            <span class="entry_title"><%= entry.title %></span>
+            <span class="entry_time">published <%= entry.published.nil? ? "time unknown" : "#{time_ago_in_words(entry.published)} ago" %></span>
+        </div>
+        <iframe id="entry_frame_<%= entry.id %>" class="actual_entry_iframe" src="<%= url_for(entry) %>" onload="resizeFrame(this);"></iframe>
+        <script type="text/javascript">
+            entry_frames.push('entry_frame_<%= entry.id %>');
+        </script>
+    </div>
+    <% end %>
+</div>
+

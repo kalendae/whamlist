@@ -1,0 +1,10 @@
+page.replace_html 'flash_area', flash[:notice] if flash[:notice]
+flash[:notice] = nil 
+page["input_progress"].hide
+unless @feed.blank? or @feed.submitter.blank?
+  page.insert_html :bottom, 'my_feeds', "<div class='feed' id='feed#{@feed.id}'>#{@feed.title}</div>"
+  page.visual_effect :highlight, "feed#{@feed.id}", :duration => 2
+  page.replace_html 'read_area', "<img src='/images/progress_indicator.gif' alt=''/>"
+  page << remote_function(:update => "read_area", :url => "/users/show/#{current_user.id}")
+end  
+

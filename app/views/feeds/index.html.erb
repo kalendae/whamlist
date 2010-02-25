@@ -45,6 +45,27 @@
   div#info {
     font-size: 12px;
   }
+  .feed {
+    font-size: 12px;
+  }
+  .submitter {
+    margin-left: 5px;
+    font-size: 10px;
+    color: #999;      
+  }
+  div#read_area {
+  }
+  .entry {
+    margin-top:10px;
+    padding: 10px;
+    border: solid 1px #999;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+  }
+  .actual_entry_iframe {
+    width: 100%;
+    border: none;      
+  }
 </style>
 
 <div id="feed_control_panel_controls">
@@ -60,7 +81,8 @@
       <% remote_form_for(@feed) do |f| %>
         Enter URL of feed to add to your list:
         <%= f.text_field :feed_url %>
-        <%= f.submit "Add" %>
+        <%= f.submit "Add", :onclick => "$('input_progress').show();"  %>
+        <img id="input_progress" src="/images/progress_sm.gif" alt="" style="display:none;">
       <% end %>
   </div>
 
@@ -68,11 +90,15 @@
 
   <div id="my_feeds" class="feedbox">
       <div class="feed_box_header">My Feeds</div>
-
+      <% current_user.feeds.each do |feed| %>
+      <div class="feed" id="feed<%= feed.id %>"><%= feed.title %></div>
+      <% end %>
   </div>
   <div id="recent_feeds" class="feedbox">
       <div class="feed_box_header">Recent Feeds</div>
-
+      <% @recent_feeds.each do |feed| %>
+      <div class="feed"><%= feed.title %> <span class="submitter">submitted by <%= feed.submitter.login %></span></div>
+      <% end %>
   </div>
   <div style="clear:left;"> </div>
 </div>
@@ -80,6 +106,18 @@
 
 <div id="info">If you scroll past an entry it is considered read.</div>
 
-<div id="read_area">
+<script type="text/javascript">
+    var entry_frames = new Array();
+    function resizeFrame(frame) {
+      frame.style.height = frame.contentWindow.document.body.scrollHeight + "px";
+    }
     
+</script>
+
+<div id="read_area">
+    <img src="/images/progress_indicator.gif" alt=""/>
+    <script type="text/javascript">
+      <%= remote_function(:update => "read_area",
+                     :url => "/users/show/#{current_user.id}") %>
+    </script>    
 </div>

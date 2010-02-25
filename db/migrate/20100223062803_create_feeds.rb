@@ -4,6 +4,7 @@ class CreateFeeds < ActiveRecord::Migration
       t.integer :submitter_id
       t.string :feed_url
       t.string :title
+      t.datetime :last_grab
 
       t.timestamps
     end

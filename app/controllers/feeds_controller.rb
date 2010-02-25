@@ -19,7 +19,7 @@ class FeedsController < ApplicationController
     @feed = Feed.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
+      format.html # _show.html.erb
       format.xml  { render :xml => @feed }
     end
   end
@@ -35,12 +35,16 @@ class FeedsController < ApplicationController
       @feed = Feed.new(params[:feed])
       begin
         f = FeedTools::Feed.open(params[:feed][:feed_url])
-        @feed.title = f.title
-        @feed.submitter = current_user
-        @feed.save!
-        flash[:notice] = 'Feed was successfully created.'
+        if f.title.blank?
+          flash[:notice] = 'Did not successfully retrieve the feed, does it exist?'
+        else
+          @feed.title = f.title
+          @feed.submitter = current_user
+          @feed.save!
+          flash[:notice] = 'Feed was successfully created.'
+        end
       rescue Exception => e
-        flash[:error] = e.message
+        flash[:notice] = e.message
       end
     else
       flash[:notice] = "Feed was first submitted by #{@feed.submitter} and has now been added to your feed list." 
@@ -50,7 +54,7 @@ class FeedsController < ApplicationController
     current_user.feeds << @feed unless @feed.blank? or @feed.submitter.blank?
 
     respond_to do |format|
-      format.js
+      format.js                                                                                                                                                                                     
     end
   end
 

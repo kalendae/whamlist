@@ -14,6 +14,9 @@ ActiveRecord::Schema.define(:version => 20100223064356) do
   create_table "entries", :force => true do |t|
     t.integer  "feed_id"
     t.string   "link"
+    t.string   "title"
+    t.datetime "published"
+    t.text     "content"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -27,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20100223064356) do
     t.integer  "submitter_id"
     t.string   "feed_url"
     t.string   "title"
+    t.datetime "last_grab"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
