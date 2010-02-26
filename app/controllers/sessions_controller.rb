@@ -9,6 +9,7 @@ class SessionsController < ApplicationController
   end
 
   def create
+    @user = User.new
     logout_keeping_session!
     user = User.authenticate(params[:login], params[:password])
     if user
